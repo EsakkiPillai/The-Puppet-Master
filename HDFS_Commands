@@ -1,1 +1,9 @@
 # Sample HDFS Comments ...... 
+
+To Create A Folder in HDFS
+$ hdfs dfs -mkdir /esak
+
+To List the Files 
+$ Hhdfs dfs -ls /
+  To check the files recursively 
+    $ hdfs  dfs -ls R /
