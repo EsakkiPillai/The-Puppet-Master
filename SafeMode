@@ -1,0 +1,32 @@
+Safe Mode 
+
+    It is a maintanence state of namenode during which namenode doesnt update the filesystem . During this safemode Hadoop Cluster is in read only Mode 
+	
+	Name Node Enters Safe Mode Automatically When its start up 
+	
+	At the time of Start Up Namenode will do the Following Activity 
+		1) It will load the Fsimage in to the Memory 
+		2) Applies the edit log with the old fsimage and will create a new FS Image 
+		3) It will receive the block report from the data node 
+		
+		This is the stage where Name node enters the safe mode automatically .... 
+	
+	Namenode will wait up to the threshold value of data node block reports which is configurable , 
+	
+				dfs.namnode.safemode.threshold-pct 0.999f this value should be less than or equal to zero if its greater than 1 safemode is permanent 
+				
+	once the threshold is reached name node will wait for considerable amount of time for the data block reports before start the replication process , Again this  time 
+	is configurable 
+	
+				dfs.namenode.safemode.extension 3000 ms this is the default value / time for which namenode will wait 
+				
+	After this time it starts the replication job , i.e. it start to update the under replicated blocks 
+	
+	Once All the Blocks are replicated Correctly { 3 Times } it leave the safe mode automatically 
+	
+	
+	
+	
+We can enter the safe mode manually during Maintainenace Activity 
+
+
