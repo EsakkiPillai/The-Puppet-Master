@@ -18,7 +18,7 @@ Safe Mode
 	once the threshold is reached name node will wait for considerable amount of time for the data block reports before start the replication process , Again this  time 
 	is configurable 
 	
-				dfs.namenode.safemode.extension 3000 ms this is the default value / time for which namenode will wait 
+			dfs.namenode.safemode.extension 3000 ms this is the default value / time for which namenode will wait 
 				
 	After this time it starts the replication job , i.e. it start to update the under replicated blocks 
 	
