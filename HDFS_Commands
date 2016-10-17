@@ -1,4 +1,6 @@
 # Sample HDFS Comments ...... 
+# Esakki
+# The-Puppet-Master/SafeMode
 
 To create a New directory 
 	hdfs dfs -mkdir /esak
