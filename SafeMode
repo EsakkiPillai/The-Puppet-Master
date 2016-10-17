@@ -38,3 +38,7 @@ hdfs admin safemode enter
 
 To Leave in to safemode manually 
 hdfs admin -safemode leave 
+
+
+
+-Esakki
