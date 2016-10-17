@@ -30,3 +30,11 @@ Safe Mode
 We can enter the safe mode manually during Maintainenace Activity 
 
 
+To know the status 
+hdfs admin -safemode get 
+
+To enter in to safemode manually 
+hdfs admin safemode enter 
+
+To Leave in to safemode manually 
+hdfs admin -safemode leave 
