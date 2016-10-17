@@ -3,7 +3,7 @@
 To create a New directory 
 	hdfs dfs -mkdir /esak
 	
-to List the Files 
+To List the Files 
 	hdfs dfs -ls /
 	
 To Copy the file from Local to HDFS 
@@ -21,8 +21,8 @@ To Copy the File From One Location to Another in HDFS
 To Move the File From One Location to Another in HDFS 
 	hdfs dfs -mv /esak/1 /esakki
 	
-To Delete teh File 
-			hdfs dfs -rm  -r /esak/1 /esakki
+To Delete the File 
+	hdfs dfs -rm  -r /esak/1 /esakki
 
 To View the Last 1 Kb Of the File 
 
