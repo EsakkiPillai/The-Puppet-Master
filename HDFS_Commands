@@ -1,9 +1,50 @@
 # Sample HDFS Comments ...... 
 
-To Create A Folder in HDFS
-$ hdfs dfs -mkdir /esak
+To create a New directory 
+	hdfs dfs -mkdir /esak
+	
+to List the Files 
+	hdfs dfs -ls /
+	
+To Copy the file from Local to HDFS 
+		hdfs dfs -put local source file path  <Hdfs Dest File Path>
+		
+To Copy the File from HDFS to Local 
+	hdfs dfs -get <Hdfs  source file path>   < Local Dest File Path>
+	
+To View the File 
+	hdfs dfs -cat /esak/test.txt
+	
+To Copy the File From One Location to Another in HDFS 
+		hdfs dfs -cp /esak/1 /esakki
 
-To List the Files 
-$ Hhdfs dfs -ls /
-  To check the files recursively 
-    $ hdfs  dfs -ls R /
+To Move the File From One Location to Another in HDFS 
+	hdfs dfs -mv /esak/1 /esakki
+	
+To Delete teh File 
+			hdfs dfs -rm  -r /esak/1 /esakki
+
+To View the Last 1 Kb Of the File 
+
+	hdfs dfs -tail  filename
+
+To 
+hdfs dfs -stat format file
+
+Check for the Available Free Space in the Folder 
+	hdfs dfs -df /
+
+Check for the used  Space in the HDFS 
+	hdfs dfs -du /	
+
+To Set the replication Factor for the Particular File 
+	hdfs dfs -setrep -5 /esak/1.txt
+	
+To Delete  the Trash / Recycle Bin 
+	hdfs dfs -expunge
+	
+To change the Mod of the File 
+	hdfs dfs -chmod 664 /esak/1.txt
+
+To Create an Empty File in HDFS 
+	hdfs dfs -touchz file.txt
