@@ -1,0 +1,83 @@
+
+Distributed Filesystem :
+
+If a File System is spread across the Network thenit is called Distributed File System..If it follows hadoop rulesthen it Become HDFS Hadoop Distributed File System....
+
+HDFS Default Block Size is 128MB and Minimum Threshold Value is 1MB 
+
+lets say a 150MB file it will be splited i to two Blocks 128 + 22 
+
+default  replication Factor is 3 and its configurable
+
+   
+
+When Cluster Size reaches 4000 namenode performance start to decrease ... i order to increase the performance we are going for  multiple  name node 
+
+Hadoop 2.0  
+
+	 we have Multi Name node 
+
+HDFS FEDERATION :- 
+we dont have federation setup , even in hadoop distribution also ,Its basically a concept 
+
+
+
+Inorder  to bring the Name nodeup 
+
+	fsimage  needs to load to memory 
+	need to reply all the transaction 
+	get report fromallthe data node
+
+
+FsIMage and Edit Logs are Huge File  ,It need to transfer over the network ,, So it will reduce the performance ofthe cluster if we transfer the files in very less interval to secondary namenode from primary naemnode 
+ 
+
+HIGH AVALABILITY :- QJM / edit logs 
+
+2) We have two Namenode in a namespace.  So all the data node send its Block Report to both the Name node .  So Active and Passive Have block Mappings always available and same . both Active and Passive Namnode shared the High Available Edit Logs 
+
+Lets Say Active Namenode goes down 
+
+Passsive NAmenode has all the Block Mapping and it wasshared with igh Available edit logs  ,Soat any time we can switch it over to another ....
+
+Its Impossible to Know the system when active namenode is down 
+
+Fail over Process Runs on the NameNode ....  if active nam node doesnt respond for 10sec hadoop makes passive  node as Primary ...  Stand By name node will be active and all the clients comminucate to the Passice name node...  
+
+What if Active namenode was bring up again, ad tries to comminucate te clients then we have 2 namenode iorder toavoidthat hadoop uses fencing concept to killthe namenode
+
+fencing process
+
+	a) it will kill all namenode process
+	b) it tries to remove permission for shared edit logss
+	c) STONITH -Shoot the Other Node In the Head , it sends a specialsignalwich cuts the power 		   supply fro the machine 
+
+
+
+
+
+Namespace is the list of all the files managed by that machine
+
+
+Second Method For High Avalabilty is Journal Node
+
+it not Applicable to Pseudo Distribution Mode
+
+QJM = Quorom Journal Node 
+
+BY default therre are 3 Journal Node canrun in Cluster , they are responsible for active and passive amnode in same space. 
+
+Default 3 Journal nodes will be there, When we do any file operation in hdfs Active namenode continously write it to majority ofthe jpournalnode ...Passive namenode continnously monitor the Journal ode whenever there is any change and if it is present i majority of the journalnode it will writre that change to itself .. by that way it will be same as of active name node if the active namenode goes down ,passivebecame active and failure and fenchigwhich we saw earlier willbe followed ...
+
+
+ 
+
+
+
+
+
+
+
+
+
+  
