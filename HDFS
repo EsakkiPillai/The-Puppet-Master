@@ -5,11 +5,24 @@ If a File System is spread across the Network thenit is called Distributed File 
 
 HDFS Default Block Size is 128MB and Minimum Threshold Value is 1MB 
 
-lets say a 150MB file it will be splited i to two Blocks 128 + 22 
+lets say a 150MB file it will be splited into two Blocks 128 + 22 
+default  replication Factor is 3 and its configurable . So in HDFS we are actually having 450 MB of data , enenthough the data is replicated / redudanted its a small price we are giving for using hadoop
 
-default  replication Factor is 3 and its configurable
+Lets Consider an Example where we have 150 MB file , it will split in to two BLOCKS 
+Every Block has a Block ID , Lets say it as Bo so we are having two Blocks so Bo , B1 ... 
 
-   
+Hadoop will place the 
+First copy of B0 Block in the same node where client is accessing , 
+Second copy of B0 Block will be placed in a random rack and a random node 
+Third Copy of B0 Bloack will be placed in the diff data node of same node itself  
+
+
+
+
+WRITE OPERATION :
+
+
+
 
 When Cluster Size reaches 4000 namenode performance start to decrease ... i order to increase the performance we are going for  multiple  name node 
 
