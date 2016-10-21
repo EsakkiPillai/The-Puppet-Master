@@ -11,6 +11,11 @@ default  replication Factor is 3 and its configurable . So in HDFS we are actual
 Lets Consider an Example where we have 150 MB file , it will split in to two BLOCKS 
 Every Block has a Block ID , Lets say it as Bo so we are having two Blocks so Bo , B1 ... 
 
+
+Replica Placement
+How does the namenode choose which datanodes to store replicas on? There’s a tradeoff
+between reliability and write bandwidth and read bandwidth here. 
+
 Hadoop will place the 
 First copy of B0 Block in the same node where client is accessing , 
 Second copy of B0 Block will be placed in a random rack and a random node 
@@ -20,6 +25,46 @@ Third Copy of B0 Bloack will be placed in the diff data node of same node itself
 
 
 WRITE OPERATION :
+----------------------------------------------------
+Client                   Name node 
+
+datanode   datanode    datanode    datanode
+
+------------------------------------------------------------
+
+
+1) Clients makes an RPC call  with namenode to write the sample.txt file 
+2) Namenode checks whether the file has already exists or not also it checks if the client have permission to write the file , 
+		if client doest have write permission it will through the IO exception 
+3 ) if client has the permission , Client will split the files in to Blocks and create 2 Queues 
+		a) Data Queue -- It will contain all the Blocks of the file   
+		b) Ack Queue  -- Once block is written  in hdfs, that Block  is removed from Data Queue and made it to the Ack Queue 
+4)  Client ask the namenode where do i write this Block B0 , 
+5 ) Namenode will send the List of datanode address where client can write the data { B0 , d1,d3,d5 }
+6) Now a pipeline will be created , Client Copies its Data Only to the D1 Datanode .. Once its completed d1 sends the data to the d3 , once its done its send the data to d5 , 
+now d5 will send the ack signal to d3 , after that d3 sends the Ack signal to d1 , Now D1 will send the ACK signal to the Client 
+Once the Client Receives the ACK from D1 it will remove the Block Id {B0} from the ACK Queue . and it will ask namenode where i can write the B1 Block 
+
+this Process will be continued untill data queue became empty ..... also keep in mind that the block B0 { 128MB} is split in to Packets and send across the network 
+
+7) When the Client finish Writing it calls the complete() method to the Namenode ...
+
+
+
+
+
+Network topology :
+
+What does it mean for two nodes in a local network to be “close” to each other ?
+
+For example, imagine a node n1 on rack r1 in data center d1. This can be represented
+as /d1/r1/n1. Using this notation, here are the distances for the four scenarios:
+• distance(/d1/r1/n1, /d1/r1/n1) = 0 (processes on the same node)
+• distance(/d1/r1/n1, /d1/r1/n2) = 2 (different nodes on the same rack)
+• distance(/d1/r1/n1, /d1/r2/n3) = 4 (nodes on different racks in the same data center)
+• distance(/d1/r1/n1, /d2/r3/n4) = 6 (nodes in different data centers)
+
+
 
 
 
