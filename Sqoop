@@ -1,0 +1,195 @@
+sudo apt-get update
+sudo apt-get install mysql-server
+sqoop help import
+
+copy mysql-connector-java-5.1.27.jar to /home/senthil/sqoop-1.4.6/lib
+
+
+>mysql
+
+create table employee (empid int,empname varchar(20),empsal int)
+
+INSERT INTO employee VALUES(101,'Rock1',21000)
+INSERT INTO employee VALUES(102,'Rock2',22000);
+INSERT INTO employee VALUES(103,'Rock3',23000);
+INSERT INTO employee VALUES(104,'Rock4',24000);
+INSERT INTO employee VALUES(105,'Rock5',25000);
+INSERT INTO employee VALUES(106,'Rock6',26000);
+INSERT INTO employee VALUES(107,'Rock7',27000);
+INSERT INTO employee VALUES(108,'Rock8',28000);
+
+
+SELECT MIN(empid), MAX(empid) from employee;
+SELECT * FROM sometable WHERE id >= lo AND id < hi, with (lo, hi)
+
+
+list options
+-------------------------------------------------------------
+sqoop list-tables --connect jdbc:mysql://localhost/sqoopJpa -username root -password root
+
+sqoop list-databases --connect jdbc:mysql://localhost/sqoopJpa  -username root -password root
+
+
+sqoop import from mysql to local
+-------------------------------
+
+sqoop import --connect jdbc:mysql://localhost/sqoopJpa -username root -password root --table employee --target-dir file:///home/esak/JPA/Sqoop/out/employee1 --split-by empid -m 2
+
+
+sqoop import from mysql to hdfs
+-------------------------------
+
+sqoop import --connect jdbc:mysql://localhost/sqoopJpa -username root -password root --table employee --target-dir /sqoop/output1 -m 1
+
+sqoop import --connect jdbc:mysql://localhost/sqoopJpa -username root -password root --table employee --where "empid <=103" --target-dir /sqoop/output1 -m 1;
+
+
+Command to execute import, using an options file:
+------------------------------------------------
+sqoop --options-file SqoopImportOptions.txt --table employee -m 1 --target-dir file:///home/esak/JPA/Sqoop/out/employee_sqoopfile
+
+
+sqoop eval --connect jdbc:mysql://localhost/sqoopJpa -username root -password root --query "SELECT * FROM employee"
+sqoop eval --connect jdbc:mysql://localhost/sqoopJpa -username root -P --query "SELECT * FROM employee LIMIT 2"
+sqoop eval --connect jdbc:mysql://localhost/sqoopJpa -username root -password root --query "INSERT INTO employee VALUES(116,'Rock16',90000)"
+
+
+
+
+create Hive table using sqoop
+-----------------------------------
+sqoop create-hive-table --connect jdbc:mysql://localhost/sqoopJpa  -username root -password root --table employee  --hive-table sqoophive.employeehivetable
+
+
+here sqoophive database should already present in hive 
+
+
+loads the data from mysql to hive
+--------------------------------------
+sqoop import --connect jdbc:mysql://localhost/sqoopJpa -username root -password root --table employee --hive-import --hive-table sqoophive.employeehivetable -m 1
+
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+4 mapper
+sqoop import --connect jdbc:mysql://localhost/sqoopJpa -username root -password root --table employee --split-by empid --target-dir /sqoop/output/employee1 -m 4
+-----------------------------------------------------------------------------------------------------------------------------------------------
+
+sqoop import-all-tables --connect jdbc:mysql://localhost/test -username root -password root --warehouse-dir file:///home/senthil/Documents/12.Sqoop/output1/ -m 1
+
+
+incremental mode
+--------------------
+
+sqoop import --connect jdbc:mysql://localhost/sqoopJpa -username root -password root --table employee --hive-import --hive-table sqoophive.employeehivetable --split-by empid --m 2 --incremental append --check-column empid --last-value 108 ;
+
+sqoop import --connect jdbc:mysql://localhost/sqoopJpa -username root -password root --table employee --incremental append  --split-by empid --check-column empid --last-value 118 --target-dir /sqoop/output1 -m 2 ;
+
+y i should give 1 value as mapper ?  if we nnedtouse multiple mapper we have to use split by tag  
+
+
+outpu
+--------
+16/01/04 19:42:15 INFO db.DataDrivenDBInputFormat: BoundingValsQuery: SELECT MIN(`empid`), MAX(`empid`) FROM `employee` WHERE ( `empid` > 105 AND `empid` <= 107 )
+
+
+sqoop codegen --connect jdbc:mysql://localhost/test -username root -password root --table employee
+
+-------------------------------------------------------------------------------------------------------------------
+sqoopJob
+---------
+sqoop job --create myjob -- import --connect jdbc:mysql://localhost/sqoopJpa -username root -password root --table employee --target-dir /sqoop/employeejob -m 1
+
+sqoop job --exec myjob;
+sqoop job --list;
+sqoop job --show myjob;
+sqoop job --delete myjob;
+
+---------------------------------
+
+export to sql
+-----------------
+mysql>create table employee3 (empid int,empname varchar(20),empsal int);
+
+
+sqoop export --connect jdbc:mysql://localhost/sqoopJpa -username root -password root --table employee3 --export-dir /sqoop/employeejob/part-m-00000
+
+-----------------------------------------------------------------
+
+SQOOP Merge
+-----------
+create table employee2 (empid int,empname varchar(20),empsal int)
+
+INSERT INTO employee2 VALUES(101,'Rock1',21000)
+INSERT INTO employee2 VALUES(102,'Rock2',22000);
+INSERT INTO employee2 VALUES(103,'Rock3',23000);
+INSERT INTO employee2 VALUES(104,'Rock4',24000);
+INSERT INTO employee2 VALUES(105,'Rock5',25000);
+INSERT INTO employee2 VALUES(106,'Rock6',26000);
+INSERT INTO employee2 VALUES(107,'Rock7',27000);
+INSERT INTO employee2 VALUES(108,'Rock8',28000);
+
+create table initial_emp2 as
+select empid,empname, empsal from employees where empsal <= 25000
+union
+select empid,empname, 'null' as sal from employees where empsal > 25000 and empsal <= 30000;
+
+mysql> select * from initial_emp2;
++-------+---------+--------+
+| empid | empname | empsal |
++-------+---------+--------+
+|   103 | Rock3   | 23000  |
+|   104 | Rock4   | 24000  |
+|   105 | Rock5   | 25000  |
+|   106 | Rock6   | null   |
+|   107 | Rock7   | null   |
+|   108 | Rock8   | null   |
++-------+---------+--------+
+6 rows in set (0.00 sec)
+
+
+create table final_emp2 as
+select empid,empname, empsal from employee2 where empsal > 25000 and empsal <= 30000
+Union
+select empid,empname, empsal  from employee2 where empsal > 30000;
+
+mysql> select * from final_emp2;
++-------+---------+--------+
+| empid | empname | empsal |
++-------+---------+--------+
+|   106 | Rock6   |  26000 |
+|   107 | Rock7   |  27000 |
+|   108 | Rock8   |  28000 |
++-------+---------+--------+
+3 rows in set (0.00 sec)
+
+
+sqoop import -connect jdbc:mysql://localhost/test -username root -password root --table initial_emp2 --target-dir /hdfs/initial_emp2 -m 1;
+
+sqoop import -connect jdbc:mysql://localhost/test -username root -password root --table final_emp2 --target-dir /hdfs/final_emp2 -m 1;
+
+sqoop merge --new-data  /hdfs/final_emp2 --onto  /hdfs/initial_emp2 --target-dir  /hdfs/MergedDataSet2 --jar-file /tmp/sqoop-senthil/compile/f00f384442e78bd9469d1e8811d8e7ca/final_emp2.jar --class-name final_emp2 --merge-key empid
+
+---------------------------------------------------------------------------------------------------------------
+code gen will create the jar java class file for the table basically it will have stter and getter method
+ 
+sqoop codegen --connect jdbc:mysql://localhost/sqoopJpa -username root -password root --table employee
+
+
+jar file will be created /tmp/sqoop-esak/compile
+----------------------------------------------------------------------------------------------------------------
+
+Sqoop-Hbase
+--------------
+/home/senthil/hbase-1.0.1.1/bin/start-hbase.sh
+
+
+sqoop import --connect jdbc:mysql://localhost/test --username root --password root --table employee --hbase-table employee --column-family emp_fam --hbase-row-key empid -m 1
+
+sqoop import --connect jdbc:mysql://localhost/test --username root --password root --table employee --hbase-table employee1 --column-family emp1_fam --hbase-create-table --hbase-row-key empid  -m 1
+
+
+bin/sqoop import --connect jdbc:mysql://localhost/test --username root --password root -table patient --hbase-table patienthbase2 --column-
+family datasqoop --hbase-row-key pid --hbase-createtable -m 1
+
+
