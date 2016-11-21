@@ -1,3 +1,31 @@
+sqoop
+-------------------------------------------
+MySql database setup and sample data
+C) Installing Sqoop
+D) Download save mySQl driver 
+E) sqoop list commands
+F) Importing data into HDFS
+    F1. Importing a table into HDFS - basic import
+    F2. Executing imports with an options file for static information
+    F3. Import all rows of a table in mySQL, but specific columns of the table
+    F4. Import all columns, filter rows using where clause
+    F5. Import with a free form query without where clause
+    F6. Import with a free form query with where clause
+    F7. Controlling parallelism and what's with the $CONDITIONS in the where clause?
+    F8. Direct connector
+    F9. Import formats
+    F10. Split by
+    F11. Boundary query
+    F12. Fetch size
+    F13. Compression
+    F14. Incremental imports
+    F15. Output line formatting options
+    F16. Import all tables
+G.  Other functionality
+    G1. Direct and quick queries or inserts and updates with sqoop eval
+    G2. Sqoop code-gen
+    G.3. Sqoop merge
+----------------------------------------------------------------------------------------------
 sudo apt-get update
 sudo apt-get install mysql-server
 sqoop help import
