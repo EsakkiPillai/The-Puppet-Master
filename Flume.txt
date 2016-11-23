@@ -1,0 +1,154 @@
+#name the components in the agent
+Agent1.sources = netcat-source
+Agent1.sinks = logger-sink
+Agent1.channels = memory-channel
+
+#Describe the Source 
+Agent1.sources.netcat-source.type = netcat
+Agent1.sources.netcat-source.port = 4444
+Agent1.sources.netcat-source.bind = localhost
+
+#Describe the Sink 
+Agent1.sinks.logger-sink = logger
+
+# Describe the Channel 
+Agent1.channels.memory-channel.type = memory
+Agent1.channels.memory-channel.capacity = 1000
+Agent1.channels.memory-channel.transactionCapacity = 100
+
+# Bind the Resources 
+Agemt1.sources.netcat-source.channels = memory-channel
+Agent1.sinks.logger-sink.channel = memory-channel
+
+
+To run the Flume Agent 
+
+$ flume-ng agent --conf $FLUME_CONF_DIR --conf-file $FLUME_CONF_DIR/flume.conf --name Agent1 -Dflume.root.logger=INFO,console
+
+
+
+case 2 :
+
+# Name the Components in the Agent 
+Agent2.sources = exec-source
+Agent2.channels = file-channel
+Agent2.sink = file-sink
+
+# Describe Source 
+Agent2.sources.exec-source.type = exec 
+Agenrt2.sources.exec-source.command = tail -F /var/log/syslog
+
+#Describe the Sink 
+
+Agent2.sinks.file-sink.type = FILE_ROLL
+Agent2.sinks.file-sink.sink.directory = /home/esak/
+Agent2.sinks.file-sink.sink.rollInterval = 0 
+
+# Describe the Memory Channel 
+
+Agent2.channels.file-channel.type = file
+Agent2.channels.file-channel.checkpointDir = /home/esak/completed
+Agent2.channels.file-channel.dataDirs = /home/esal/flume/log 
+
+# Bind the Resources 
+
+Agent2.sources.exec-source.channel = file-channel
+Agent2.sinks.file-sink.channel = file-channel
+
+
+$ flume-ng agent --CONF $FLUME_CONF_DIR --conf-file $FLUME_CONF_DIR/flume.conf --name Agent2 -Dflume.root.logger=INFO,CONSOLE
+
+
+
+
+
+# Name the Components in agent 
+
+Agent3.sources = seq-source
+Agent3.sinks = hdfs-sink
+Agent3.channels = memory-channel
+
+# Describe the Sources 
+Agent3.sources.seq-source.type = seq
+
+#Describe the sink 
+Agent3.sinks.hdfs-sink.type = hdfs 
+Agent3.sinks.hdfs-sink.hdfs.path = /usr/fliume
+Agent3.sinks.hdfs-sink.hdfs.fileType = datastream 
+Agent3.sinks.hdfs-sink.hdfs.filePrefix = log 
+Agent3.sinks.hdfs-sink.hdfs.rollInterval = 0 
+Agent3.sinks.hdfs-sink.hdfs.rollCount = 10000
+
+
+# Describe Memory Channel 
+Agent3.channels.memory-channel.type = memory
+Agent3.channels.memory-channel.capacity = 1000
+Agent3.channels.memory-channel.transactionCapacity = 100
+
+
+# Bind the Resources 
+
+Agent3.sources.seq-source.channel = memory-channel
+Agent3.sinks.hdfs-sink.channel = memory-channel
+
+
+$ flume-ng agent --CONF $FLUME_CONF_DIR --conf-file $FLUME_CONF_DIR/flume.conf --name Agent3 _Dflume.root.logger=INFO,CONSOLE
+
+
+
+### Agent5-Spooling Directory Source, Spillable Memory Channel and HBase Sink ###
+
+# Name the components on this agent 
+Agent5.sources = spooldir-source  
+Agent5.channels = spillmem-channel
+Agent5.sinks = hbase-sink
+
+# Describe/configure Source
+Agent5.sources.spooldir-source.type = spooldir
+Agent5.sources.spooldir-source.spoolDir = /usr/lib/flume/spooldir
+Agent5.sources.spooldir-source.fileHeader = false
+
+# Describe the sink
+Agent5.sinks.hbase-sink.type = hbase
+Agent5.sinks.hbase-sink.table = test_table
+Agent5.sinks.hbase-sink.columnFamily = test_cf
+
+# Use a channel which buffers events in file
+Agent5.channels.spillmem-channel.type = SPILLABLEMEMORY
+Agent5.channels.spillmem-channel.memoryCapacity = 10000
+Agent5.channels.spillmem-channel.overflowCapacity = 1000000
+Agent5.channels.spillmem-channel.byteCapacity = 80000
+Agent5.channels.spillmem-channel.checkpointDir = /var/log/flume/checkpoint/
+Agent5.channels.spillmem-channel.dataDirs = /var/log/flume/data/
+
+# Bind the source and sink to the channel
+Agent5.sources.spooldir-source.channels = spillmem-channel
+Agent5.sinks.hbase-sink.channel = spillmem-channel
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
