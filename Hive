@@ -10,3 +10,41 @@ normally hive Comes with Derby Databse which is a open source Traditional RDBMS 
 
 Differenece Between Hive and RDBMS 
 
+Hive is a datawarehouse system which sits on top of the Hadoop 
+Rdbms have different needs and different Architecture 
+
+Hive is not for transactional Processing it is used for Analytical Processing RDBMS is for Transactional process 
+
+
+Traditional Databases uses indexes to increase performance 
+
+Hive doesnt allow row level updates or deletes  which means data once written and ready many times.This is well suited for analytical purpose since analysts dont update the Historical Data 
+
+Hive is based on Schema On Read
+
+      hive dont guatntee that the data follows the schema , hive tried its best to make sure the schema is followed 
+Hive data is stored in HDFS and hive is not the sole gatekeeper for the data these files cab bemodified by other clients , 
+Because these underlying files can be changed at any time hive doesnt enforce any schema ( Schema on Write is not an Option}
+
+If HIVe cannot read the schema it will Pad the data as null 
+
+
+Lets say we have a hive schema
+
+Emp table Fname , Lname , age but the file has only two column esakki, sankar 
+when we try to access the age column select age from table it will return Null 
+
+While Write the data it is basically plain Dumps , it doesnt know any schemantics at all during the write operation 
+
+Load /Insert operations  hive will just dump the data without any check 
+
+
+ 
+Traditional Rdbms is schema on write these are the sole gatekeeper for the data which under lyes with in it .
+No external Program can access the data without going through the database
+
+
+schema   is the description of the database table { column name , column Type  Constraints } these 3 info are used when we create the table  
+
+
+Hive doesnt Support Constraints at all 
