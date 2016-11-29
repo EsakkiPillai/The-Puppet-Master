@@ -1,0 +1,12 @@
+Hive 
+----------------------
+
+Hive is a datawarehouse tool built on top of the hadoop 
+hive stores its data in the form of files and the data available in HDFS with the replication factor 
+Hive sql faced interface => hive uses sql like language called HiveQL and this will be transfered to the mapreduce Program. and it process the data available in theHDFS 
+Hive atores its metadat in the Hive Meta Store which is a Traditional RDBMS system 
+normally hive Comes with Derby Databse which is a open source Traditional RDBMS file by apache we can configure to any tranditional Database
+
+
+Differenece Between Hive and RDBMS 
+
