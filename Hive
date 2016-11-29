@@ -47,4 +47,41 @@ No external Program can access the data without going through the database
 schema   is the description of the database table { column name , column Type  Constraints } these 3 info are used when we create the table  
 
 
-Hive doesnt Support Constraints at all 
+CONSTRAINT :Hive doesnt Support Constraints at all 
+
+Delete INSERT :-  update are not Possible in Hive - This is because of schema on read and because of that writes are just dump in Hive 
+
+JOIN :-  hive allow joins it even allow for some customization 
+
+2 major differeence between hive and sql joins 
+
+            a) Hive supports only equiJoins 
+            b) Hive doesnt support Natural Joins 
+            
+  a) SELECT A.FNAME , B.CLASS FROM EMP A JOIN SUB B ON A.EMPID =B.EMPID 
+  
+  
+IN HIVE THE JOIN CONDITION SHOULD BE ONLY EQUAL 
+SQL CONDITION SHOULD BE ANYTHING 
+
+
+NATURAL JOIN :- 
+
+            Natural joins are the joins where the join clause is  implict 
+
+SELECT A.FNAME , B.CLASS FROM EMP A , SUB B in here it will check for the matching column in these two table have same value
+
+Hive doesnt support Natural Join 
+
+
+
+
+SubQueries :-  Hive treats subqueries as mapreduce jobs which causes some restrictions in it 
+ UNION Operator is allowed 
+ 
+ INTERSECT MINUS are not exist in HIVE 
+ 
+ 
+ REstriction in subqueries using IN/EXISTS 
+
+
