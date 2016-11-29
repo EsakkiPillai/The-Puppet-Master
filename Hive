@@ -7,7 +7,7 @@ Hive sql faced interface => hive uses sql like language called HiveQL and this w
 Hive atores its metadat in the Hive Meta Store which is a Traditional RDBMS system 
 normally hive Comes with Derby Databse which is a open source Traditional RDBMS file by apache we can configure to any tranditional Database
 
-
+Hive CLI uses semicolon as mandotory 
 Differenece Between Hive and RDBMS 
 
 Hive is a datawarehouse system which sits on top of the Hadoop 
@@ -83,5 +83,67 @@ SubQueries :-  Hive treats subqueries as mapreduce jobs which causes some restri
  
  
  REstriction in subqueries using IN/EXISTS 
+ 
+ 
+ 
+ 
+ 
+ 
+ INSTALLATION 
+ 
+ 1) Untar the hive 
+ 2) Update the Bashrc File 
+ 3) Create the hive-site.xml 
+ 
+ 
+ 
+ ---------------------------------------------------------
+ 
+ Hive Commands 
+ 
+ 
+  
+ show databases;	To list theAvailable  Databases
+use <databaseName>;	To use the database and create tables inside the database 
+show tables;	      To list the Tables 
+select * from students;	To view all the Data in the table , it wont trigger any Mapreduce job 
+describe students ;	Prints the table information like column name and its data types
+describe extended students;	Prints more additional Details like where data resides in Hdfs what kind of input and output format for hive to read and write the data
+select * from students where gender = 'F';	
+"select gender , count(student_id) from students 
+group by gender "	Mapreduce task will be triggered 
+!clear;	Run Shell Commands Through the ! 
+"from students select fnam , lname where 
+gender = 'm' "	Possible in Hive 
+
+
+ why Hive runs map reduce jobs only for Where clause statements not for normal select statements?
+ Case 1: SELECT * FROM <table>; 
+In this case, all the table contents are supposed to be delivered straight forward. There there isn't any 'precondition' or 'filter' as such which 'WHERE' clause introduces. 
+Hive stores tables as files on HDFS and AFAIK in this case Hive simply out streams that file contents (similar to 'cat' in Linux). 
+This must be part of optimization. Running MR job and slowing the query doesn't make sense in this case. 
+
+Case 2: SELECT * FROM <table> WHERE <condition;> 
+In this case, table contents must be processed through some kind of logic/filter to get rows matching the condition. 
+As Hive is meant for huge data, this processing is done by taking advantage of scalable, parallel Hadoop map reduce framework. 
+
+Hope this solves your query.
+
+
+
+
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 
 
