@@ -269,7 +269,18 @@ Note: Sqoop cannot currently split on multi-column indices. If your table has no
 15) Import mysql Table in to HBASE 
 
 
-					
+16)sqoop mergecommands 
+
+sqoop merge --merge-key language_id --new-data /March/sqoopExamples/updatedEsakLanguage --onto /March/sqoopExamples/Esaklanguage --target-dir /March/sqoopExamples/CombinedLanguage --class-name esak_language --jar-file /tmp/sqoop-esak/compile/521f0a2d8be9cd50e15aa0f782709348/esak_language.jar 
+we have to delete the		 old folder stage folder and look like oly one folder is available
+
+17) Sqoop JOb 
+
+sqoop job --create job esakjob1 -- import --conect
+
+sqoop job --list
+sqoop job --exec esakjob1
+
 					
 					
 Use -append flag => it will add additional file in to the same folder 
