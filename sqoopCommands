@@ -163,7 +163,45 @@ Note: Sqoop cannot currently split on multi-column indices. If your table has no
 				If we swicth the case of this just one field, to EMP_NO, it works fine.
 			
 
-	
+sqoop  import --connect jdbc:mysql://localhost/northwind --username root -P -m 2 
+--query 'select id ,employee_id, customer_id,ship_name,status_id from orders where ship_city = "New York" AND $CONDITIONS '
+--split-by id  --hive-import --create-hive-table --hive-table orders_newyork --hive-partition-key ship_city 
+--hive-partition-value 'New York' --target-dir /user/hive/wareouse/orders
+--------------------------------------------------------------------------------------------------------------------------------------------
+IMPORT IN HIVE USING PARTITION 
+
+orders - ship_city 
+
+partition - Ship_City 
+sqoop  import --connect jdbc:mysql://localhost/northwind 
+--username root -P -m 2
+--query 'select id ,employee_id, customer_id,ship_name,status_id from orders where ship_city = "Miami" AND $CONDITIONS '
+--split-by id  --hive-import 
+--hive-overwrite 
+--hive-table orders 
+--hive-partition-key ship_city --hive-partition-value 'Miami' 
+--target-dir /user/hive/wareouse/ordersnew
+
+sqoop  import --connect jdbc:mysql://localhost/northwind --username root -P -m 2 
+--query 'select id ,employee_id, customer_id,ship_name,status_id from orders where ship_city = "New York" AND $CONDITIONS ' 
+--split-by id  --hive-import --hive-overwrite 
+--hive-table orders 
+--hive-partition-key ship_city 
+--hive-partition-value 'New York' 
+--target-dir /user/hive/wareouse/ordersnew
+
+
+Folder Structure 
+
+esak@esak:~$ hdfs dfs -ls /user/hive/warehouse/orders
+Found 2 items
+drwxr-xr-x   - esak supergroup          0 2017-03-19 03:13 /user/hive/warehouse/orders/ship_city=Miami
+drwxr-xr-x   - esak supergroup          0 2017-03-19 03:16 /user/hive/warehouse/orders/ship_city=New York
+
+
+
+
+
 	
 7) Export HDFS DATA into Mysql 
 
