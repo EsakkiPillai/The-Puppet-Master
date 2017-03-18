@@ -179,8 +179,10 @@ sqoop  import --connect jdbc:mysql://localhost/northwind
 --split-by id  --hive-import 
 --hive-overwrite 
 --hive-table orders 
---hive-partition-key ship_city --hive-partition-value 'Miami' 
+--hive-partition-key ship_city 
+--hive-partition-value 'Miami' 
 --target-dir /user/hive/wareouse/ordersnew
+--fields-terminated-by '$' --lines-terminated-by '\n' 
 
 sqoop  import --connect jdbc:mysql://localhost/northwind --username root -P -m 2 
 --query 'select id ,employee_id, customer_id,ship_name,status_id from orders where ship_city = "New York" AND $CONDITIONS ' 
@@ -189,6 +191,7 @@ sqoop  import --connect jdbc:mysql://localhost/northwind --username root -P -m 2
 --hive-partition-key ship_city 
 --hive-partition-value 'New York' 
 --target-dir /user/hive/wareouse/ordersnew
+--fields-terminated-by '$' --lines-terminated-by '\n' 
 
 
 Folder Structure 
