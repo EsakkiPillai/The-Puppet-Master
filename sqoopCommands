@@ -242,7 +242,79 @@ Note: Sqoop cannot currently split on multi-column indices. If your table has no
 				--update-key emp_id
 				--update-mode allowinsert
 				--enclosed-by '\"'
+4b.Update data from HDFS into a table in a relational database
 
+Create emp table tbl in mysql test db
+
+create table emp
+(
+id int not null primary key,
+name varchar(50)
+);
+vi emp --> create file with below contents
+
+1,Thiru
+2,Vikram
+3,Brij
+4,Sugesh
+Move the file to hdfs
+
+hadoop fs -put emp <dir>
+Execute the below sqoop job to export the data to the mysql
+
+sqoop export --connect <jdbc connection> \
+--username sqoop \
+--password sqoop \
+--table emp \
+--export-dir <dir> \
+--input-fields-terminated-by ',';
+Verify the data in the mysql table
+
+mysql> select * from emp;
+
++----+--------+
+| id | name   |
++----+--------+
+|  1 | Thiru  |
+|  2 | Vikram |
+|  3 | Brij   |
+|  4 | Sugesh |
++----+--------+
+update the emp file & move the updated file into hdfs. contents of the updated file
+
+1,Thiru
+2,Vikram
+3,Sugesh
+4,Brij
+5,Sagar
+Sqoop export for upsert - Update if the key matches else insert.
+
+sqoop export --connect <jdbc connection> \
+--username sqoop \
+--password sqoop \
+--table emp \
+--update-mode allowinsert \
+--update-key id \
+--export-dir <dir> \
+--input-fields-terminated-by ',';
+
+Note: --update-mode <mode> - we can pass two arguments "updateonly" - to update the records. this will update the records if the update key matches.
+if you want to do upsert (If exists UPDATE else INSERT) then use "allowinsert" mode.
+example: 
+--update-mode updateonly \ --> for updates
+--update-mode allowinsert \ --> for upsert
+verify the results:
+
+mysql> select * from emp;
++----+--------+
+| id | name   |
++----+--------+
+|  1 | Thiru  |
+|  2 | Vikram |
+|  3 | Sugesh |--> Previous value "Brij"
+|  4 | Brij   |--> Previous value "Sugesh"
+|  5 | Sagar  |--> new value inserted
++----+--------+
 				
 14) Read Multiple Mysql Files to HDFS not {IMPORT ALL STATEMENT }
 
