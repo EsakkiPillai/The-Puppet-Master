@@ -1,0 +1,112 @@
+
+
+Pbm 02
+
+
+northwind ==> strings
+
+sqoop import --connect jdbc:mysql://localhost/northwind  --username root -P  --table strings --target-dir /March/SqoopPract/Pbm01 -m 8 --as-avrodatafile --compress --compression-codec org.apache.hadoop.io.compress.SnappyCodec --outdir java_files
+
+Pbm03
+
+import 
+
+sqoop import --connect jdbc:mysql://localhost/northwind --username root -P --table products --target-dir /March/SqoopPract/Pbm02a -m 3 --as-textfile --fields-terminated-by '\t' --lines-terminated-by '\n' --compress --compression-codec org.apache.hadoop.io.compress.SnappyCodec
+
+
+--2b
+
+sqoop import --connect jdbc:mysql://localhost/northwind --username root -P --table invoices --target-dir /March/SqoopPract/Pbm02b -m 3 --as-textfile --fields-terminated-by '\t' --lines-terminated-by '\n'
+
+export
+
+sqoop export --connect jdbc:mysql://localhost/northwind --username root -P --table invoices_esak -m 3 --export-dir /March/SqoopPract/Pbm02b --input-fields-terminated-by '\t' --input-lines-terminated-by '\n'
+
+
+compression export sqoop export --connect jdbc:mysql://localhost/northwind --username root -P --table invoices_esakcompress --export-dir /March/SqoopPract/Pbm02a -m 3  --input-fields-terminated-by '\t' --input-lines-terminated-by '\n'
+
+
+PBM 04
+sqoop import --connect jdbc:mysql://localhost/northwind --username root -P -m 1 --target-dir /March/SqoopPract/pbm04 --query  "select * from suppliers where last_name = 'Glasson' and \$CONDITIONS"
+
+sqoop import --connect jdbc:mysql://localhost/northwind --username root -P -m 1 --target-dir /March/SqoopPract/pbm04a --table suppliers  --where "last_name ='Glasson'" 
+
+
+sqoop import --connect jdbc:mysql://localhost/northwind --username root -P -m 1 --target-dir /March/SqoopPract/pbm04c --table suppliers --columns id,company,last_name,first_name,job_title  --fields-terminated-by '$' --lines-terminated-by '###'
+
+
+sqoop import --connect jdbc:mysql://localhost/northwind --username root -P -m 1 --target-dir /March/SqoopPract/pbm04d --table suppliers --columns id,company,last_name,first_name,job_title  --fields-terminated-by '$' --lines-terminated-by '###' --split-by id
+
+
+
+pbm 05 :
+
+sqoop import --connect jdbc:mysql://localhost/northwind --username root -P --table es_sample --target-dir /March/SqoopPract/pbm05a -m 1 
+
+sqoop export --connect jdbc:mysql://localhost/northwind --username root -P --table es  --export-dir /March/SqoopPract/pbm05a -m 1
+
+
+
+pbm 06
+
+
+update only 
+
+sqoop import --connect jdbc:mysql://localhost/northwind  --username root -P -m 1 --target-dir /March/SqoopPract/pbm06update --table orders_tax_status_stg --check-column id --incremental append  --last-value 1 
+
+sqoop import --connect jdbc:mysql://localhost/northwind  --username root -P -m 1 --target-dir /March/SqoopPract/pbm06update --table orders_tax_status_stg --append --check-column id  --incremental append --last-value 2
+
+
+esak@esak:~$ hdfs dfs -cat  /March/SqoopPract/pbm06update/part*
+0,Tax_Exempt_1 
+1,Taxable
+2,Tax REdemption
+3,RED REdemption
+8,RED
+
+
+
+Export 
+
+updateonly upsert 
+
+onlyupdate the values in MYSQL
+
+esak@esak:~$ sqoop export --connect jdbc:mysql://localhost/northwind --username root -P -m 3 --table orders_tax_status_src --export-dir /March/SqoopPract/pbm06update --update-key id --update-mode updateonly
+
+mysql> select * from  orders_tax_status_src;
++----+-----------------+
+| id | tax_status_name |
++----+-----------------+
+|  0 | Tax_Exempt_1    |
+|  1 | Taxable         |
++----+-----------------+
+2 rows in set (0.00 sec)
+
+allowinsert insert if not update
+
+sqoop export --connect jdbc:mysql://localhost/northwind --username root -P -m 3 --table orders_tax_status_src --export-dir /March/SqoopPract/pbm06update --update-key id --update-mode allowinsert
+
+mysql> select * from  orders_tax_status_src;
++----+-----------------+
+| id | tax_status_name |
++----+-----------------+
+|  0 | Tax_Exempt_1    |
+|  1 | Taxable         |
+|  2 | Tax REdemption  |
+|  3 | RED REdemption  |
+|  8 | RED             |
++----+-----------------+
+5 rows in set (0.00 sec)
+
+
+
+
+
+
+
+
+
+
+
+
