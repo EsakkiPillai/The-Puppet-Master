@@ -411,7 +411,24 @@ sqoop job --create job esakjob1 -- import --conect
 sqoop job --list
 sqoop job --exec esakjob1
 
-					
+18 ) Import the File as sequence file and as avro file 
+
+sqoop import \
+  --connect "jdbc:mysql://sandbox.hortonworks.com:3306/retail_db" \
+  --username=retail_dba \
+  --password=hadoop \
+  --table departments \
+  --as-sequencefile \
+  --target-dir=/user/root/departments
+
+sqoop import \
+  --connect "jdbc:mysql://sandbox.hortonworks.com:3306/retail_db" \
+  --username=retail_dba \
+  --password=hadoop \
+  --table departments \
+  --as-avrodatafile \
+  --target-dir=/user/root/departments
+  
 					
 Use -append flag => it will add additional file in to the same folder 
 
