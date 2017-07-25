@@ -25,3 +25,21 @@
  val border = "--" * s.length+"--\n"
  println(border+ "|\n" + s + "|\n"
  }
+
+ Named Default Arguments 
+ 
+ while Creating the Function if we declare the Arguments with Parameters it will take that as the default parameter 
+ 
+ def decorate (s: String , left:String ="[" ,right:String = "]") {
+		left+ s +right + 
+	}
+decorate("hello")             //[Hello]
+decorate("hello" , "@" ,"!")  //@Hello!
+decorate("Hello" , "$" )     // $Hello]	
+
+if we are not specifying the left or right parameter values default parameters value will get executed as above 
+
+named Arguments - while at the Time of Function call if we specify the values with the named Parameters we can call the Function irrespective of its position 
+
+decorate( right = "#" ,left="$" ,s="Hello" )    // $Hello#
+
