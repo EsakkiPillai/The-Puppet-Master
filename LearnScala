@@ -37,6 +37,71 @@ decorate("hello")             //[Hello]
 decorate("hello" , "@" ,"!")  //@Hello!
 decorate("Hello" , "$" )     // $Hello]	
 
+
+
+varargs
+
+def sum(x:Int*) = {
+	var result =0
+	for( rg <- args ) result +=rg
+	result
+	}
+
+sum(1,2,3,45)
+
+if i put 
+sum(1 to 10) 
+it will throw some error inorder to overcome that we are using :_*
+
+so sum ( 1to10 :_*) which will tell consider this as sequence of Something
+
+we need this for recursive type of functions 
+
+def sumrev ( x :Int*) = {
+	if(x.length==0) 0
+	else x.head + sumrev(x.tail :_*)
+	}
+
+
+
+
+get the Vowels from the String 
+
+if we found a vowel give it back to me 
+
+
+def vowelsyield(str:String) =
+    for (x <-str if isvowel3(x) ) yield x
+
+	this above  lines will do the trick for us 
+IN JAVE/ SCALA  we have to use the below code 
+
+def vowels(s:String) = {
+  val str = s.toLowerCase()
+  var result:String = " "
+  for( x <- str)  {
+    if (isvowel3(x) )
+      result += x
+  }
+  result
+}
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 if we are not specifying the left or right parameter values default parameters value will get executed as above 
 
 named Arguments - while at the Time of Function call if we specify the values with the named Parameters we can call the Function irrespective of its position 
