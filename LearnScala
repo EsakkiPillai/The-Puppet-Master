@@ -1,0 +1,27 @@
+##################################Functions##################################################
+ Methods are Defined inside the Classes and Functions can be declared Any where .
+ Functions wont Operate on Objects 
+ 
+ A simple Function / Function Syntax as follows 
+ 
+ def abs (x:Double) = { 
+	if (x >0) x else -x
+ }
+ 
+ def is the Keyword  and it is followed by the function Name 
+ x is the input parameter and we declare x is an Double   in Java we write Double x in scala we wrie the quite Opposite 
+ in here we dont specify the return type because return type is inferred... values are returned to the function call 
+ in the aboe we didnt specify the Output data type since scala automatically infer the data type , as Double 
+ 
+ if we declare the Function in the recursive manner we need to specify the data type  explicitly
+ def fact(n:Int):Int ={
+	if(i <=1) 1 
+	else i*fact(i-1)
+	}
+	
+ if we dont give the equals in the Function it will be treated as the unit Function in here it will only excute the expression and returns nothing/ unit 
+ 
+ def border (s:String ) {
+ val border = "--" * s.length+"--\n"
+ println(border+ "|\n" + s + "|\n"
+ }
