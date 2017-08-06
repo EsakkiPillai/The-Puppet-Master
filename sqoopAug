@@ -1,0 +1,187 @@
+slno	Scenario	Steps	Commands				
+1	Common commands 	"a) List the Table 
+b) List the Databases
+c) use eval command"	"sqoop list-tables --connect jdbc://mysql:nn0.itversity.com/retail_dba --username retail_dba --password itversity
+
+sqoop list-databases --connect jdbc://mysql://nn01.itversity.com/retail_dba --username retail_dba --password itversity 
+
+sqoop eval --connectjdbc://mysql://nn01.itversity.com/retail_dba --username retail_dba --password itversity 
+"				
+2	import a single table from mysql to Hdfs 	"a) Import a normal table to Hdfs 
+b) Import the same to Hdfs using options file also change the mapper to 6 and check the files at the hdfs directory 
+c) Import the same table to hdfs using different delimiters like ( #,$) fields by , lines by # 
+d) import  the same table but limited columns but all the records from the table 
+e) import the same table using query 
+f) import the same table with no PK 
+g) import the same table by joining the source table 
+h) import the same table using the compression codec "	"a)   sqoop import  --connect jdbc://mysql:nn01.itversity.com/retail_dba  --username retail_dba --password itversity --table orders_item --target-dir /home/esakkipillai/August/Sqoop/
+b) sqoop import --option-file /home/esakkipillai/sqoop_file.prop --table orders_item -m 6  --target-dir /home/esakkipillai/August/Sqoop/op 
+
+c) sqoop import  --connect jdbc://mysql:nn01.itversity.com/retail_dba  --username retail_dba --password itversity --table orders_item --target-dir /home/esakkipillai/August/Sqoop/ --fields-termintaed-by '>>' --lines-terminated-by '**' 
+
+d) sqoop import  --connect jdbc://mysql:nn01.itversity.com/retail_dba  --username retail_dba --password itversity --table orders_items --column order_item_id,order_item_order_id,order_item_subtotal --target-dir /home/esakkipillai/August/Sqoop/ 
+
+e) sqoop import --connect jdbc://mysql://nn01.itversity.com/retail_dba --username retail_dba --password itversity  --query ""select * from orders_items where orders_id ==2500 AND $CONDITIONS""  --target-dir /home/esakkipillai/August/Sqoop/ 
+
+f)  option 1 :- 
+
+sqoop  import --connect jdbc://mysql://nn01.itversity.com/retail_dba --username retail_dba --password itversity  --table orders_items_nopk --target /home/esakkipillai/August/Sqoop -m1 
+option 2 
+sqoop import --connect jdbc://mysql://nn01.itversity.com/retail_dba --username retail_dba --password itversity --table orders_items_nopk --split-by order_id --target-dir /home/esakkipillai/August/Sqoop/ -m 3
+
+g)  sqoop import --connect jdbc://mysql://nn01.itversity.com/retail_dba --username retail_dba --password itversity --query  ""select * from orders join order_items on orders.order_id=order_items.order_item_order_id where $CONDITIONS"" --target-dir  /home/esakkipillai/August/Sqoop/
+
+f) sqoop import  --connect jdbc://mysql:nn01.itversity.com/retail_dba  --username retail_dba --password itversity --table orders_item  --m 5  --compress --compression-codec org.apache.hadoop.io.compress.SnappyCodec --target-dir /home/esakkipillai/August/Sqoop/ --outdir /home/esakkipillai/javaFiles "	"a ) we didn’t specify any mapper so 4 maapers will be selected by default and4 part-m0000* files will be created and all the files will be text files  by default 
+b) 6 files will be generated 
+
+
+e) re run the same command without $CONDITIONS and check for errors if any ?  
+
+f)  option 1 we used only one mapper so all the data will be available in a single file and the work wont be splited against multiple threads  
+     option 2  Since primary key is not defined we have to manually define the column name in which we are going to split the data based on that  "	"b) Sqoop_opt.prop 
+--connect jdbc://mysql:nn01.itversity.com/retail_dba --username retail_dba --password itversity"		
+3	import a table from mysql into Hive	"a) import a table into hive 
+b) import the table into the hive with delimiters
+c)import the table into hive partition table 
+d) import a null value from mysql to Hive "	"a ) sqoop  import --connect jdbc://mysql://nn01.itversity.com/retail_dba --username retail_dba --password itversity --table orders_items  --hive-import --create-hive-table   --hive-overwrite --hive-table augsit.orders_items --target-dir /home/esakkipillai/August/Sqoop/hive/ -m 3 
+
+b) sqoop  import --connect jdbc://mysql://nn01.itversity.com/retail_dba --username retail_dba --password itversity  --table orders_items --hive-import  --hive-databases augsit --hive-table orders_items_new --hive-drop-import-delims 
+
+c)sqoop  import --connect jdbc://mysql://nn01.itversity.com/retail_dba --username retail_dba --password itversity  --hive-import --hive-overwrite --hive-table orders_items_part --hive-partition-key order_id --hive-partition-value 102 --query ""select * from orders_items where order_id = 102 AND $CONDITIONS"" --target-dir /home/esakkipillai/August/Sqoop/hivePart -m 5 
+
+d) sqoop  import --connect jdbc://mysql://nn01.itversity.com/retail_dba --username retail_dba --password itversity  --table orders_items --hive-import --hive-overwrite --hive-table augsit.order_items_hive    --null-string  ""@"" --null-non-string ""@@"" --target-dir /home/esakkipillai/August/Sqoop/nullerhive"	"You are using --hive-import, it will create hive table for you IF NOT EXISTS. It will create with Hive's default delimiter - fields terminated by : CTRL A and lines terminated by : \n 
+Even though Hive supports escaping characters, it does not handle escaping of new-line character.
+
+Hive will have problems using Sqoop-imported data if your database’s rows contain string fields that have Hive’s default row delimiters (\n and \r characters) or column delimiters (\01 characters) present in them. You can use the --hive-drop-import-delims option to drop those characters on import to give Hive-compatible text data. Alternatively, you can use the --hive-delims-replacement option to replace those characters with a user-defined string on import to give Hive-compatible text data.
+
+check the partition key value for Both Int and the String Value "	"You can simply use --hive-drop-import-delims in your query and it will drop \n.
+
+sqoop import --connect jdbc:mysqll//localhost:3306/mysqldb \
+--username user --password pwd --table mysqltbl \
+--hive-import --hive-overwrite \
+--hive-table hivedb.hivetbl -m 1 \
+--hive-drop-import-delims \
+--null-string '\\N' \
+--null-non-string '\\N' \
+If you want to replace your own string (say space i.e. "" ""), you can use --hive-delims-replacement.
+
+sqoop import --connect jdbc:mysqll//localhost:3306/mysqldb \
+--username user --password pwd --table mysqltbl \
+--hive-import --hive-overwrite \
+--hive-table hivedb.hivetbl -m 1 \
+--hive-delims-replacement "" "" \
+--null-string '\\N' \
+--null-non-string '\\N' \"	"In your sqoop script you mentioned --null-string '\N' --null-non-string '\N which means,
+
+--null-string '\N'  = The string to be written for a null value for string columns 
+
+--null-non-string '\N' = The string to be written for a null value for non-string columns"	
+4	incremental import 	"a) import the incremental value from the database using where clause
+b) import the incremnetal value from the table"	"option 1 :- 
+
+a) sqoop import --connect jdbc://mysql://nn01.itversity.com/retail_dba --username retail_dba --password itversity  --table orders_items --where ""orders_id > 333"" --append 
+
+option 2:- 
+
+b) sqoop import  --connect jdbc://mysql://nn01.itversity.com/retail_dba --username retail_dba --password itversity --table order_items --check-column order_item_id --incremental append --last-value 333"	"–append is req in this case as well
+–check-column : columns against which delta is evaluated
+–last-value: last values from where data has to be imported
+
+–incremental: append/lastmodified
+* –incremental: append – Used when there are only inserts into the the sql table (NO UPDATES)
+* –incremental: lastmodified – Used when there are inserts and updates to the SQL table. For this to use we should have date column in the table and –last-value should be the timestamp"			
+5	export the hdfs data to mysql 	"a) export the normal hdfs file data to mysql
+b) export the file data having delimiters back to the mysql 
+c) update the mysql table based on the updated record in HDFS "	"a) sqoop export --connect jdbc://mysql:nn01.itversity.com/retail_dba --username retail_dba --password itversity --table orders_sql --export-dir /home/esakkipillai/August/sqoop/Orders
+
+b) sqoop export --connect jdbc://mysql://nn01.itversity.com/retail_dba --usernaem retail_dba --password itersity --table orders_export --export-dir /home/esakkipillai/August/Sqoop/Orders  --input-fields-terminated-by "","" --input-lines-terminated-by ""*"" 
+
+c)  sqoop export --connect jdbc://mysql://nn01.itversity.com/retail_dba --usernaem retail_dba --password itersity --table orders_export --export-dir /home/esakkipillai/August/Sqoop/Orders  --update-mode allowinsert --update-key order_id --input-fields-termintaed-by "","""	"update-mode updateonly  for updates
+--update-mode allowinsert  for upsert  if  update if not  insert"	"All the delimiters in HDFS input in export are appended with –input
+* –input-enclosed-by: It encloses every field in the data with this character
+* –input-escaped-by: Used to escape any special characters in the data (like , in csv can cause issue with total number of cols in a record)
+* –input-fields-terminated-by: field separater
+* –input-lines-terminated-by: line separater
+* –input-null-string: Replace null in string columns
+* –input-null-non-string: Replace null in non-string(int, double etc) columns
+But if we are used non-default SQL delimiters when we imported the data and wanted to use same imported directory in export then we have to use above-to-above arguments as well as those delimiters will be stored in the out-dir (java-files) in the imported dir
+
+sqoop export --connect ""jdbc:mysql://quickstart.cloudera:3306/retail_db"" --username retail_dba --password cloudera --table departments_test --export-dir /user/hive/warehouse/sqoop_import.db/departments_test/ --input-fields-terminated-by \\001 --input-lines-terminated-by '\n' --input-null-string NULL --input-null-non-string -1"		
+6	update or merge hdfs data in to mysql	a) update the hdfs data back into mysql 	 sqoop export --connect jdbc://mysql://nn01.itversity.com/retail_dba --usernaem retail_dba --password itersity --table orders_export --export-dir /home/esakkipillai/August/Sqoop/Orders  --update-key orders_id --update-mode update 	"update-key is the primary_key/unique_key against which the update will happen. There has to be a primary key on the table for the above query to work otherwise all records will be inserted (duplicate records). If there is composite key then give comma separated columns
+* –update-mode : updateonly/allowinsert
+updateonly – It updates the existing record/s and DOES NOT insert new record (DEFAULT MODE), all new records will be ignored. So without passing –update-mode argument, records can only be updated but new records cannot be inserted.
+allowinsert – It can updates existing records and also inserts new records
+* Without –update-key and –update-mode, it works only as insert mode."			
+7	fileformats	"a) import the table into HDFS with sequence fileformat
+b) import the table into hive as avro file format "	"a ) sqoop import --connect jdbc://mysql://nn01.itversity.com/retail_dba --username retail_dba --password itversity   --table orders  --target-dir /home/esakkipillai/August/Sqoop   --as-sequencefile 
+
+b)  sqoop import --connect jdbc://mysql://nn01.itversity.com/retail_dba --username retail_dba --password itversity   --table orders  --target-dir /home/esakkipillai/August/Sqoop -m5 --as-avrodatafile"				
+8	Sqoop job 	"a) create a sqoop job 
+b) list the available sqoop job 
+c) execute a sqoop job "	" a) Simple Sqoop Import Job 
+
+sqoop job --create job ek  import --connect  jdbc://mysql://nn01.itversity.com/retail_dba --username retail_dba --password itversity --table orders  --target-dir /home/esakkipillai/August/Sqoop 
+
+b) sqoop list 
+
+sqoop job --list 
+
+c) exec job 
+sqoop job --exec ek"				
+9	sqoop Merge						
+10	import all the table 	"a) import all the tables to the Hdfs 
+b) import all the tables to hdfs using compression 
+c)  import all the tables to hive using compression "	"a) sqoop import-all-tables --connect jdbc://mysql:nn01.itversity.com/retail_dba  --username retail_dba --password itversity -m 12 --target-dir /user/hive/warehouse/ --as-textfile 
+
+b) sqoop import-all-tables --connect jdbc://mysql:nn01.itversity.com/retail_dba  --username retail_dba --password itversity -m 12 -- target-dir /user/hive/warehouse --compress --compression-codec org.apache.hadoop.io.SnappyCodec 
+
+c) sqoop import-all-tables --connect jdbc://mysql:nn01.itversity.com/retail_dba  --username retail_dba --password itversity -m 12 -- target-dir /user/hive/warehouse --compress --compression-codec org.apache.hadoop.io.SnappyCodec  --hive-import --hive-overwrite --hive-table augsit.orders_items  --outdir /home/esakkipillai/javafiles"				
+11	import  tables using shell script	"a) import the table to HDFS using Shell scripts 
+b) import tables to Hive using Shell Scripts "	"#!/bin/bash
+
+filename=""foo.txt""
+while read line;
+     do 
+      DBNAME = 'echo $line | cut -d '.' -f1'
+      TableName = 'echo $line | cut -d '.' -f2 '
+      
+      sqoop import -Dmapreduce.job.queuename=$RM_QUEUE_NAME 
+      --connect '$JDBC_URL;databaseName=$DBNAME;username=$USERNAME;password=$PASSWORD' 
+      --table $tableName  --target-dir $DATA_COLLECTOR/$tableName  
+      --fields-terminated-by '\001' 
+      -m 1
+      
+     done<inputfile"				
+12	export  hive to Mysql 	"a) export a normal table back to hdfs 
+b) export the table with delimiters 
+c) export the tabale back with the update mode 
+"	same result as of HDFS since hive is a layer on top of HDFS				
+13	creating avro based hive table 	"CREATE TABLE kst
+  PARTITIONED BY (ds string)
+  ROW FORMAT SERDE
+  'org.apache.hadoop.hive.serde2.avro.AvroSerDe'
+  STORED AS INPUTFORMAT
+  'org.apache.hadoop.hive.ql.io.avro.AvroContainerInputFormat'
+  OUTPUTFORMAT
+  'org.apache.hadoop.hive.ql.io.avro.AvroContainerOutputFormat'
+  TBLPROPERTIES (
+    'avro.schema.url'='http://schema_provider/kst.avsc');"					
+14							
+15							
+							
+slno	flags						
+1	append						
+2	batch						
+3	outdir						
+4	hive-drop-import-delims						
+5	exclude-tables						
+							
+							
+		GitHub	https://raw.githubusercontent.com/EsakkiPillai/The-Puppet-Master/master/sqoopCommands				
+		Cheat Sheet	https://tekmarathon.com/2016/12/21/sqoop-cheat-sheet/				
+ref		Terardata Sqoop 	https://community.hortonworks.com/content/supportkb/49673/null-strings-not-handled-by-sqoop-export.html				
+		Sqoop Hive avro 	http://wpcertification.blogspot.in/2016/12/importing-data-from-sqoop-into-hive.html				
+							
+							
+		property files where to keep and how to use 					
+		 place holers = while running shell scripts 					
