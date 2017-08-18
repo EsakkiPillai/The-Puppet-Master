@@ -2,6 +2,27 @@
 # Esakki
 # The-Puppet-Master/SafeMode
 
+The File System (FS) shell includes various shell-like commands that directly interact with the Hadoop Distributed File System (HDFS) 
+as well as other file systems that Hadoop supports, such as Local FS, HFTP FS, S3 FS, and others. The FS shell is invoked by:
+bin/hadoop fs <args>
+
+appendToFile
+
+Usage: hdfs dfs -appendToFile <localsrc> ... <dst>
+
+Append single src, or multiple srcs from local file system to the destination file system. Also reads input from stdin and appends to destination file system.
+
+hdfs dfs -appendToFile localfile /user/hadoop/hadoopfile
+hdfs dfs -appendToFile localfile1 localfile2 /user/hadoop/hadoopfile
+
+chmod
+Usage: hdfs dfs -chmod [-R] <MODE[,MODE]... | OCTALMODE> URI [URI ...]
+
+Change the permissions of files. With -R, make the change recursively through the directory structure. The user must be the owner of the file, or else a super-user. Additional information is in the Permissions Guide.
+Options
+
+The -R option will make the change recursively through the directory structure.
+
 To create a New directory 
 	hdfs dfs -mkdir /esak
 	
@@ -22,7 +43,69 @@ To Copy the File From One Location to Another in HDFS
 
 To Move the File From One Location to Another in HDFS 
 	hdfs dfs -mv /esak/1 /esakki
-	
+
+
+count
+
+Usage: hdfs dfs -count [-q] [-h] <paths>
+
+Count the number of directories, files and bytes under the paths that match the specified file pattern. The output columns with -count are: DIR_COUNT, FILE_COUNT, CONTENT_SIZE FILE_NAME
+
+The output columns with -count -q are: QUOTA, REMAINING_QUATA, SPACE_QUOTA, REMAINING_SPACE_QUOTA, DIR_COUNT, FILE_COUNT, CONTENT_SIZE, FILE_NAME
+
+The -h option shows sizes in human readable format.
+
+Example:
+
+hdfs dfs -count hdfs://nn1.example.com/file1 hdfs://nn2.example.com/file2
+hdfs dfs -count -q hdfs://nn1.example.com/file1
+hdfs dfs -count -q -h hdfs://nn1.example.com/file1
+Exit Code:
+
+Returns 0 on success and -1 on error.
+
+To view the space available in the Cluster 
+The -s option will result in an aggregate summary of file lengths being displayed, rather than the individual files.
+The -h option will format file sizes in a "human-readable" fashion (e.g 64.0m instead of 67108864)
+hdfs dfs -du /user/hadoop/dir1 /user/hadoop/file1 hdfs://nn.example.com/user/hadoop/dir1
+
+
+getmerge
+
+Usage: hdfs dfs -getmerge <src> <localdst> [addnl]
+
+Takes a source directory and a destination file as input and concatenates files in src into the destination local file. Optionally addnl can be set to enable adding a newline character at the end of each file.
+
+
+setrep
+
+Usage: hdfs dfs -setrep [-R] [-w] <numReplicas> <path>
+
+Changes the replication factor of a file. If path is a directory then the command recursively changes the replication factor of all files under the directory tree rooted at path.
+
+Options:
+
+The -w flag requests that the command wait for the replication to complete. This can potentially take a very long time.
+The -R flag is accepted for backwards compatibility. It has no effect.
+Example:
+
+hdfs dfs -setrep -w 3 /user/hadoop/dir1
+Exit Code:
+
+Returns 0 on success and -1 on error.
+
+stat
+
+Usage: hdfs dfs -stat URI [URI ...]
+
+Returns the stat information on the path.
+
+Example:
+
+hdfs dfs -stat path
+Exit Code: Returns 0 on success and -1 on error.
+
+
 To Delete the File 
 	hdfs dfs -rm  -r /esak/1 /esakki
 
