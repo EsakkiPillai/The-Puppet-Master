@@ -1,3 +1,9 @@
+Useful Links 
+https://github.com/rklick-solutions/spark-tutorial/wiki/Spark-SQL
+http://homepage.cs.latrobe.edu.au/zhe/ZhenHeSparkRDDAPIExamples.html#sortBy
+read DATA from mysql directly to spark 
+http://wpcertification.blogspot.in/
+---------------------------------------------------------
 Log 4J Implementation 
 Step 1:- 
 Update build.sbt with below log4j dependency
